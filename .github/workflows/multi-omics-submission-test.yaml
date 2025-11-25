@@ -1,0 +1,110 @@
+name: Integration - MARS PoC
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  poc-mars-cli:
+    runs-on: ubuntu-latest
+
+    env:
+      # Where mars-cli will put .mars/
+      MARS_SETTINGS_DIR: ${{ github.workspace }}/mars_settings
+
+      # Paths for MARS repo and ISA template
+      MARS_REPOSITORY_SERVICES_PATH: ${{ github.workspace }}/MARS/repository-services
+      MARS_ISA_TEMPLATE_PATH: ${{ github.workspace }}/MARS/test-data/biosamples-input-isa.json
+
+      # Credentials from GitHub secrets
+      MARS_WEBIN_USERNAME: ${{ secrets.MARS_WEBIN_USERNAME }}
+      MARS_WEBIN_PASSWORD: ${{ secrets.MARS_WEBIN_PASSWORD }}
+      MARS_METABOLIGHTS_METADATA_USERNAME: ${{ secrets.MARS_METABOLIGHTS_METADATA_USERNAME }}
+      MARS_METABOLIGHTS_METADATA_PASSWORD: ${{ secrets.MARS_METABOLIGHTS_METADATA_PASSWORD }}
+      MARS_METABOLIGHTS_DATA_USERNAME: ${{ secrets.MARS_METABOLIGHTS_DATA_USERNAME }}
+      MARS_METABOLIGHTS_DATA_PASSWORD: ${{ secrets.MARS_METABOLIGHTS_DATA_PASSWORD }}
+
+    steps:
+      - name: Checkout MARS (for repository-services + test-data)
+        uses: actions/checkout@v4
+        with:
+          repository: elixir-europe/MARS
+          path: MARS
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install mars-cli
+        run: |
+          pip install --upgrade pip
+          pip install .
+
+      - name: Start repository-services (docker compose up)
+        working-directory: ${{ env.MARS_REPOSITORY_SERVICES_PATH }}
+        run: |
+          docker compose up -d --build
+
+      - name: Wait for services to start
+        run: |
+          # Wait for both services to become healthy (max ~150s)
+          for i in {1..30}; do
+            echo "Health check attempt $i..."
+
+            ISAENA_OK=0
+            ISABIOSAMPLES_OK=0
+
+            curl -fsS http://localhost:8042/isaena >/dev/null && ISAENA_OK=1 || ISAENA_OK=0
+            curl -fsS http://localhost:8032/isabiosamples >/dev/null && ISABIOSAMPLES_OK=1 || ISABIOSAMPLES_OK=0
+
+            if [ "$ISAENA_OK" -eq 1 ] && [ "$ISABIOSAMPLES_OK" -eq 1 ]; then
+              echo "Both services are up ✅"
+              exit 0
+            fi
+
+            echo "Services not ready yet. isaena=$ISAENA_OK isabiosamples=$ISABIOSAMPLES_OK"
+            sleep 5
+          done
+
+          echo "Services did not become healthy in time ❌"
+          exit 1
+
+      - name: Prepare PoC - settings, ISA JSON, credentials, dataFiles
+        run: |
+          python scripts/prepare_poc_submission.py
+
+      - name: Run mars-cli submit (dev ENA + BioSamples, no MetaboLights)
+        run: |
+          set -euo pipefail
+
+          # Build list of --data-files arguments from generated .fastq.gz files
+          DATA_ARGS=()
+          for f in poc_work/data/*.fastq.gz; do
+            echo "Using data file: ./$f"
+            DATA_ARGS+=( "./$f" )
+          done
+
+          echo "Running mars-cli with data args: $DATA_ARGS"
+
+          mars-cli --development submit \
+            --submit-to-metabolights False \
+            --file-transfer ftp \
+            --data-files $DATA_ARGS \
+            --credentials-file ./poc_work/credentials.json \
+            ./poc_work/isa.json
+
+      - name: Upload run artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: run-artifacts
+          path: |
+            poc_work/
+            mars_settings/
+            output_*.json
+
+      - name: Stop repository-services (docker compose down)
+        if: always()
+        working-directory: ${{ env.MARS_REPOSITORY_SERVICES_PATH }}
+        run: |
+          docker compose down --volumes

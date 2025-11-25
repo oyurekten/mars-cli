@@ -1,4 +1,4 @@
-name: Test MARS
+name: Test mars-cli
 on:
   push:
     paths:
