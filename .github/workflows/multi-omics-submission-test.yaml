@@ -13,19 +13,19 @@ jobs:
 
     env:
       # Where mars-cli will put .mars/
-      MARS_SETTINGS_DIR: ${{ github.workspace }}/mars_settings
+      SETTINGS_DIR: ${{ github.workspace }}/mars_settings
 
       # Paths for MARS repo and ISA template
-      MARS_REPOSITORY_SERVICES_PATH: ${{ github.workspace }}/MARS/repository-services
-      MARS_ISA_TEMPLATE_PATH: ${{ github.workspace }}/MARS/test-data/biosamples-input-isa.json
+      REPOSITORY_SERVICES_PATH: ${{ github.workspace }}/MARS/repository-services
+      ISA_TEMPLATE_PATH: ${{ github.workspace }}/MARS/test-data/biosamples-input-isa.json
 
       # Credentials from GitHub secrets
-      MARS_WEBIN_USERNAME: ${{ secrets.MARS_WEBIN_USERNAME }}
-      MARS_WEBIN_PASSWORD: ${{ secrets.MARS_WEBIN_PASSWORD }}
-      MARS_METABOLIGHTS_METADATA_USERNAME: ${{ secrets.MARS_METABOLIGHTS_METADATA_USERNAME }}
-      MARS_METABOLIGHTS_METADATA_PASSWORD: ${{ secrets.MARS_METABOLIGHTS_METADATA_PASSWORD }}
-      MARS_METABOLIGHTS_DATA_USERNAME: ${{ secrets.MARS_METABOLIGHTS_DATA_USERNAME }}
-      MARS_METABOLIGHTS_DATA_PASSWORD: ${{ secrets.MARS_METABOLIGHTS_DATA_PASSWORD }}
+      WEBIN_USERNAME: ${{ secrets.WEBIN_USERNAME }}
+      WEBIN_PASSWORD: ${{ secrets.WEBIN_PASSWORD }}
+      METABOLIGHTS_METADATA_USERNAME: ${{ secrets.METABOLIGHTS_METADATA_USERNAME }}
+      METABOLIGHTS_METADATA_PASSWORD: ${{ secrets.METABOLIGHTS_METADATA_PASSWORD }}
+      METABOLIGHTS_DATA_USERNAME: ${{ secrets.METABOLIGHTS_DATA_USERNAME }}
+      METABOLIGHTS_DATA_PASSWORD: ${{ secrets.METABOLIGHTS_DATA_PASSWORD }}
 
     steps:
       - name: Checkout MARS (for repository-services + test-data)
@@ -36,7 +36,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.13"
 
       - name: Install mars-cli
         run: |
@@ -44,7 +44,7 @@ jobs:
           pip install .
 
       - name: Start repository-services (docker compose up)
-        working-directory: ${{ env.MARS_REPOSITORY_SERVICES_PATH }}
+        working-directory: ${{ env.REPOSITORY_SERVICES_PATH }}
         run: |
           docker compose up -d --build
 
@@ -107,6 +107,6 @@ jobs:
 
       - name: Stop repository-services (docker compose down)
         if: always()
-        working-directory: ${{ env.MARS_REPOSITORY_SERVICES_PATH }}
+        working-directory: ${{ env.REPOSITORY_SERVICES_PATH }}
         run: |
           docker compose down --volumes

@@ -2,7 +2,7 @@
 """
 Prepare a PoC environment for MARS-CLI (no pytest, no run script):
 
-- Ensure settings.ini exists in $MARS_SETTINGS_DIR/.mars or ~/.mars
+- Ensure settings.ini exists in $SETTINGS_DIR/.mars or ~/.mars
 - Generate an ISA-JSON from a template, where:
     * dataFiles entries in the first assay are updated to point to
       UNIQUE .fastq.gz files
@@ -31,7 +31,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def ensure_settings_ini() -> Path:
-    parent_str = os.environ.get("MARS_SETTINGS_DIR")
+    parent_str = os.environ.get("SETTINGS_DIR")
     mars_dir = Path(parent_str) / ".mars"
     mars_dir.mkdir(parents=True, exist_ok=True)
 
@@ -68,12 +68,12 @@ def ensure_settings_ini() -> Path:
 
 def write_credentials_json(work_dir: Path) -> Path:
     required_vars = [
-        "MARS_WEBIN_USERNAME",
-        "MARS_WEBIN_PASSWORD",
-        "MARS_METABOLIGHTS_METADATA_USERNAME",
-        "MARS_METABOLIGHTS_METADATA_PASSWORD",
-        "MARS_METABOLIGHTS_DATA_USERNAME",
-        "MARS_METABOLIGHTS_DATA_PASSWORD",
+        "WEBIN_USERNAME",
+        "WEBIN_PASSWORD",
+        "METABOLIGHTS_METADATA_USERNAME",
+        "METABOLIGHTS_METADATA_PASSWORD",
+        "METABOLIGHTS_DATA_USERNAME",
+        "METABOLIGHTS_DATA_PASSWORD",
     ]
 
     missing = [v for v in required_vars if not os.environ.get(v)]
@@ -84,16 +84,16 @@ def write_credentials_json(work_dir: Path) -> Path:
 
     creds = {
         "webin": {
-            "username": os.environ["MARS_WEBIN_USERNAME"],
-            "password": os.environ["MARS_WEBIN_PASSWORD"],
+            "username": os.environ["WEBIN_USERNAME"],
+            "password": os.environ["WEBIN_PASSWORD"],
         },
         "metabolights_metadata": {
-            "username": os.environ["MARS_METABOLIGHTS_METADATA_USERNAME"],
-            "password": os.environ["MARS_METABOLIGHTS_METADATA_PASSWORD"],
+            "username": os.environ["METABOLIGHTS_METADATA_USERNAME"],
+            "password": os.environ["METABOLIGHTS_METADATA_PASSWORD"],
         },
         "metabolights_data": {
-            "username": os.environ["MARS_METABOLIGHTS_DATA_USERNAME"],
-            "password": os.environ["MARS_METABOLIGHTS_DATA_PASSWORD"],
+            "username": os.environ["METABOLIGHTS_DATA_USERNAME"],
+            "password": os.environ["METABOLIGHTS_DATA_PASSWORD"],
         },
     }
 
@@ -103,7 +103,7 @@ def write_credentials_json(work_dir: Path) -> Path:
 
 
 def resolve_isa_template() -> Path:
-    template_env = os.environ.get("MARS_ISA_TEMPLATE_PATH")
+    template_env = os.environ.get("ISA_TEMPLATE_PATH")
     if template_env:
         src = Path(template_env)
     else:
