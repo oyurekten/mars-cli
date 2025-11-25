@@ -76,7 +76,7 @@ jobs:
         run: |
           python scripts/prepare_poc_submission.py
 
-      - name: Run mars-cli submit (dev ENA + BioSamples, no MetaboLights)
+      - name: Run mars-cli submit
         run: |
           set -euo pipefail
 
