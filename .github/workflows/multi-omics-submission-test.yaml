@@ -29,10 +29,9 @@ jobs:
 
     steps:
       - name: Checkout MARS (for repository-services + test-data)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
-          repository: elixir-europe/MARS
-          path: MARS
+          submodules: 'recursive'
 
       - name: Set up Python
         uses: actions/setup-python@v5
