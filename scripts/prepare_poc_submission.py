@@ -18,7 +18,6 @@ The GitHub Action (or you, locally) will then call mars_cli.py directly using:
                    (typically poc_work/data/*.fastq.gz)
 """
 
-from __future__ import annotations
 
 import json
 import os
