@@ -379,13 +379,19 @@ def submit_to_ena(
     if result.status_code == 200 and not result.json().get("errors", []):
         return result
 
+    response_body = ""
+    try:
+        response_body = json.dumps(result.json(), indent=2)
+    except Exception:
+        response_body = result.text
+
     body = (
         result.request.body.decode()
         if isinstance(result.request.body, bytes)
         else result.request.body or ""
     )
     raise requests.HTTPError(
-        f"Request towards ENA failed!\nRequest:\nMethod:{result.request.method}\nStatus:{result.status_code}\nURL:{submission_url}\nParams: ['webinUserName': {params.get('webinUserName')}, 'webinPassword': ****]\nHeaders:{result.request.headers}\nBody:{body}"
+        f"Request towards ENA failed!\nRequest:\nMethod:{result.request.method}\nStatus:{result.status_code}\nURL:{submission_url}\nParams: ['webinUserName': {params.get('webinUserName')}, 'webinPassword': ****]\nHeaders:{result.request.headers}\nBody:{body}\nResponse:\n{response_body}"
     )
 
 
