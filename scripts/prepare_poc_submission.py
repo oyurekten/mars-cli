@@ -2,7 +2,7 @@
 """
 Prepare a PoC environment for MARS-CLI (no pytest, no run script):
 
-- Ensure settings.ini exists in $SETTINGS_DIR/.mars or ~/.mars
+- Ensure settings.ini exists in $MARS_SETTINGS_DIR/.mars, or ~/.mars
 - Generate an ISA-JSON from a template, where:
     * dataFiles entries in the first assay are updated to point to
       UNIQUE .fastq.gz files
@@ -31,7 +31,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def ensure_settings_ini() -> Path:
-    parent_str = os.environ.get("SETTINGS_DIR")
+    parent_str = os.environ.get("MARS_SETTINGS_DIR")
     mars_dir = Path(parent_str) / ".mars"
     mars_dir.mkdir(parents=True, exist_ok=True)
 

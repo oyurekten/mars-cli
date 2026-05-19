@@ -13,7 +13,7 @@ jobs:
 
     env:
       # Where mars-cli will put .mars/
-      SETTINGS_DIR: ${{ github.workspace }}/mars_settings
+      MARS_SETTINGS_DIR: ${{ github.workspace }}/mars_settings
 
       # Paths for MARS repo and ISA template
       REPOSITORY_SERVICES_PATH: ${{ github.workspace }}/MARS/repository-services
@@ -84,7 +84,7 @@ jobs:
           DATA_ARGS=()
           for f in poc_work/data/*.fastq.gz; do
             echo "Using data file: ./$f"
-            DATA_ARGS+=( "./$f" )
+            DATA_ARGS+=( --data-files "./$f" )
           done
 
           echo "Running mars-cli with data args: $DATA_ARGS"
@@ -92,7 +92,7 @@ jobs:
           mars-cli --development submit \
             --submit-to-metabolights False \
             --file-transfer ftp \
-            --data-files $DATA_ARGS \
+            "${DATA_ARGS[@]}" \
             --credentials-file ./poc_work/credentials.json \
             ./poc_work/isa.json
 
@@ -106,7 +106,6 @@ jobs:
             output_*.json
 
       - name: Stop repository-services (docker compose down)
-        if: always()
         working-directory: ${{ env.REPOSITORY_SERVICES_PATH }}
         run: |
           docker compose down --volumes
