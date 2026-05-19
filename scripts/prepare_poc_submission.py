@@ -70,10 +70,10 @@ def write_credentials_json(work_dir: Path) -> Path:
     required_vars = [
         "WEBIN_USERNAME",
         "WEBIN_PASSWORD",
-        "METABOLIGHTS_METADATA_USERNAME",
-        "METABOLIGHTS_METADATA_PASSWORD",
-        "METABOLIGHTS_DATA_USERNAME",
-        "METABOLIGHTS_DATA_PASSWORD",
+        # "METABOLIGHTS_METADATA_USERNAME",
+        # "METABOLIGHTS_METADATA_PASSWORD",
+        # "METABOLIGHTS_DATA_USERNAME",
+        # "METABOLIGHTS_DATA_PASSWORD",
     ]
 
     missing = [v for v in required_vars if not os.environ.get(v)]
@@ -87,14 +87,14 @@ def write_credentials_json(work_dir: Path) -> Path:
             "username": os.environ["WEBIN_USERNAME"],
             "password": os.environ["WEBIN_PASSWORD"],
         },
-        "metabolights_metadata": {
-            "username": os.environ["METABOLIGHTS_METADATA_USERNAME"],
-            "password": os.environ["METABOLIGHTS_METADATA_PASSWORD"],
-        },
-        "metabolights_data": {
-            "username": os.environ["METABOLIGHTS_DATA_USERNAME"],
-            "password": os.environ["METABOLIGHTS_DATA_PASSWORD"],
-        },
+        # "metabolights_metadata": {
+        #     "username": os.environ["METABOLIGHTS_METADATA_USERNAME"],
+        #     "password": os.environ["METABOLIGHTS_METADATA_PASSWORD"],
+        # },
+        # "metabolights_data": {
+        #     "username": os.environ["METABOLIGHTS_DATA_USERNAME"],
+        #     "password": os.environ["METABOLIGHTS_DATA_PASSWORD"],
+        # },
     }
 
     cred_path = work_dir / "credentials.json"
