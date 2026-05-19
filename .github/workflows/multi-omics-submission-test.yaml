@@ -106,6 +106,7 @@ jobs:
             poc_work/
             mars_settings/
             output_*.json
+            !poc_work/credentials.json
 
       - name: Stop repository-services (docker compose down)
         working-directory: ${{ env.REPOSITORY_SERVICES_PATH }}
