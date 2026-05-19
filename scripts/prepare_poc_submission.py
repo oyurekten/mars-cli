@@ -37,31 +37,30 @@ def ensure_settings_ini() -> Path:
 
     settings_path = mars_dir / "settings.ini"
 
-    if not settings_path.exists():
-        content = textwrap.dedent(
-            f"""
-            [logging]
-            log_level = DEBUG
-            log_file = {mars_dir / "app.log"}
-            log_max_size = 1024
-            log_max_files = 5
+    content = textwrap.dedent(
+        f"""
+        [logging]
+        log_level = DEBUG
+        log_file = {mars_dir / "app.log"}
+        log_max_size = 1024
+        log_max_files = 5
 
-            [ena]
-            development-url = http://localhost:8042/isaena
-            development-submission-url = http://localhost:8042/isaena/submit
+        [ena]
+        development-url = http://localhost:8042/isaena
+        development-submission-url = http://localhost:8042/isaena/submit
 
-            [biosamples]
-            development-url = http://localhost:8032/isabiosamples
-            development-submission-url = http://localhost:8032/isabiosamples/submit
+        [biosamples]
+        development-url = http://localhost:8032/isabiosamples
+        development-submission-url = http://localhost:8032/isabiosamples/submit
 
-            [metabolights]
-            development-url = https://www-test.ebi.ac.uk/metabolights/mars/ws3/submissions/
-            development-submission-url = https://www-test.ebi.ac.uk/metabolights/mars/ws3/submissions/
-            development-token-url = https://www-test.ebi.ac.uk/metabolights/mars/ws3/auth/token
-            """
-        ).strip() + "\n"
+        [metabolights]
+        development-url = https://www-test.ebi.ac.uk/metabolights/mars/ws3/submissions/
+        development-submission-url = https://www-test.ebi.ac.uk/metabolights/mars/ws3/submissions/
+        development-token-url = https://www-test.ebi.ac.uk/metabolights/mars/ws3/auth/token
+        """
+    ).strip() + "\n"
 
-        settings_path.write_text(content)
+    settings_path.write_text(content)
 
     return settings_path
 
