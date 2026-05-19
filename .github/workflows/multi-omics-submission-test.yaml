@@ -98,17 +98,28 @@ jobs:
             --credentials-file ./poc_work/credentials.json \
             ./poc_work/isa.json
 
+      - name: Collect repository-service logs
+        if: always()
+        working-directory: ${{ env.REPOSITORY_SERVICES_PATH }}
+        run: |
+          mkdir -p "${GITHUB_WORKSPACE}/service-logs"
+          docker compose logs isa_biosamples > "${GITHUB_WORKSPACE}/service-logs/isa_biosamples.log" 2>&1 || true
+          docker compose logs isa_sra > "${GITHUB_WORKSPACE}/service-logs/isa_sra.log" 2>&1 || true
+
       - name: Upload run artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: run-artifacts
           path: |
             poc_work/
             mars_settings/
+            service-logs/
             output_*.json
             !poc_work/credentials.json
 
       - name: Stop repository-services (docker compose down)
+        if: always()
         working-directory: ${{ env.REPOSITORY_SERVICES_PATH }}
         run: |
           docker compose down --volumes
