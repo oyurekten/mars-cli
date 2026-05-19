@@ -93,6 +93,7 @@ jobs:
           mars-cli --development submit \
             --submit-to-metabolights False \
             --file-transfer ftp \
+            --output "output_${{ github.run_id }}_${{ github.run_attempt }}.json" \
             "${DATA_ARGS[@]}" \
             --credentials-file ./poc_work/credentials.json \
             ./poc_work/isa.json
