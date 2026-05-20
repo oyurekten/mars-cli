@@ -40,7 +40,7 @@ def ensure_settings_ini() -> Path:
     content = textwrap.dedent(
         f"""
         [logging]
-        log_level = DEBUG
+        log_level = INFO
         log_file = {mars_dir / "app.log"}
         log_max_size = 1024
         log_max_files = 5
